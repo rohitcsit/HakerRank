@@ -1,0 +1,137 @@
+After state division a new assembly is constructed at Amaravathi. There are N chairs placed in circular order. Some of the chairs are empty and in some of the chairs MLA's are sitting. The speaker want make them to sit next to each other(i.e they form a connected segment). For making this possible you have to following operation number of times:
+
+Choose an MLA and tell him to wailk around the circle in clockwise or anti-clockwise until he finds the empty chair, and tell MLA too sit there
+
+What is the minimum number of operations required t make all MLA sit next to each other?
+
+Input Format
+
+The first line T,the no.of test cases
+
+The first line of each test case contain N, the no.of chairs.
+
+The second line of each test-case contains binary String of length N. If the i-th character is 1 then the ith chair has a MLA initially. Otherwise it is empty.
+
+Constraints
+
+1<=T<=5000
+
+1<=sum of N in all test-cases<=10^6
+
+atleast one chair is occupied.
+
+Output Format
+
+For each test case, output a single line containing an single integer denoting min no.of operations needed
+
+Sample Input 0
+
+1
+8
+10001010
+Sample Output 0
+
+2
+Explanation 0
+
+The initial configuration is
+
+                    **1**
+
+                 0      0
+
+             1             0
+
+                 0      0
+
+                     1
+We can tell an MLA who is starred to move counter-clockwise and the new configuration will be:
+
+                    0
+
+              **1**      0
+
+             1             0
+
+                 0      0
+
+                     1
+Now we will again tell him to move counter-clockwise and the new configuration will be:
+
+                    0
+
+                 0      0
+
+             1             0
+
+                **1**      0
+
+                     1
+because MLA moved counter-clockwise, found an occupied char, and hence kept moving.The next chair was vacant, and he sat down there
+
+Note that, in this example, we moved the same MLA 2 times, but this need not be the case. We can move different children in different moves.
+
+You can check that this is the best we can do, and 2 is minimum
+
+
+
+
+----------------------------------------------------------------------------
+
+
+
+
+#include<iostream>
+#include<vector>
+using namespace std;
+int main()
+{
+    vector<int> v;
+    int t;
+    cin>>t;
+    while(t--)
+    {
+        int n;
+        cin>>n;
+        string str;
+        str.clear();
+        cin>>str;
+        int count;
+        count=0;
+        int k;
+        k=0;
+        for(int i=0;i<n;i++)
+        {
+            if(str[i]=='1')
+            {
+                v.push_back(count);
+                count=0;
+                k++;
+            }
+            else
+            {
+                count++;
+            }
+        }
+        v.push_back(count);
+        int sum=0;
+        for(int i=0;i<=k;i++)
+        {
+            sum=sum+v[i];
+        }
+        int min;
+        min=sum-v[0]-v[k];
+        //cout<<min<<endl;
+        for(int i=1;i<k;i++)
+        {
+            //cout<<v[i];
+            if(sum-v[i]<min)
+            {
+                min=sum-v[i];
+            }
+        }
+        cout<<min<<endl;
+        v.clear();
+        
+    }
+}
