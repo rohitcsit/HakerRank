@@ -1,0 +1,25 @@
+import sys
+
+def solve(a, b, c, k):
+    lo, hi = 0, 10**9
+    while lo < hi:
+        mid = (lo + hi) // 2
+        x = mid
+        val = a * x * x + b * x + c
+        if val >= k:
+            hi = mid
+        else:
+            lo = mid + 1
+    return lo
+
+def main():
+    input = sys.stdin.read()
+    lines = input.splitlines()
+    t = int(lines[0])
+    for i in range(1, t + 1):
+        a, b, c, k = map(int, lines[i].split())
+        ans = solve(a, b, c, k)
+        print(ans)
+
+if __name__ == "__main__":
+    main()
