@@ -1,0 +1,74 @@
+#include <iostream>
+#include <math.h>
+#include <algorithm>
+
+#define inf 0x3f3f3f3f
+
+using namespace std;
+
+struct node {
+    double l;
+    double r;
+};
+
+node a[10020];
+
+int cmp1(node x, node y) {
+    if (x.l != y.l) {
+        return x.l < y.l;
+    } else {
+        return x.r > y.r;
+    }
+}
+
+int main() {
+    std::ios::sync_with_stdio(false);
+    int n;
+    double len, w;
+    double c, rr;
+    while (cin >> n >> len >> w) {
+        int num = 0;
+        double maxxr = -1.0;
+        for (int i = 0; i < n; i++) {
+            cin >> c >> rr;
+            if (rr * 2 <= w) {
+                continue;
+            } else {
+                double l = c - sqrt(rr * rr - w * w / 4);
+                double r = c + sqrt(rr * rr - w * w / 4);
+                if (r >= maxxr) {
+                    maxxr = max(maxxr, r);
+                }
+                a[num].l = l;
+                a[num++].r = r;
+            }
+        }
+        sort(a, a + num, cmp1);
+        int k = 0;
+        if (a[0].l > 0 || maxxr < len) {
+            cout << -1 << endl;
+            continue;
+        }
+        double maxx = 0;
+        int ans = 0;
+        while (maxx < len) {
+            double uu = maxx;
+            for (int i = 0; i < num; i++) {
+                if (a[i].l <= uu && a[i].r > maxx) {
+                    maxx = a[i].r;
+                    // ... process the found segment
+                }
+            }
+            if (uu == maxx && uu < len) {
+                break; // cannot reach the end, exit
+            }
+            ans++;
+        }
+        if (maxx >= len) {
+            cout << ans << endl;
+        } else {
+            cout << -1 << endl;
+        }
+    }
+    return 0;
+}
