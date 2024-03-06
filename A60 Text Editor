@@ -1,0 +1,73 @@
+Given two strings s and t, return true if they are equal when both are typed into empty text editors. '#' means a backspace character.
+
+Note that after backspacing an empty text, the text will continue empty.
+
+Input Format
+
+The First line contains a string s.
+The Second line contains a string t.
+Constraints
+
+1 <= s.length, t.length <= 200
+s and t only contain lowercase letters and '#' characters.
+Output Format
+
+Print true if they are equal when both are typed into empty text editors otherwise print false.
+
+Sample Input 0
+a#c
+b
+
+Sample Output 0
+false
+
+Sample Input 1
+ab##
+c#d#
+
+Sample Output 1
+true
+
+
+------------------------------------------------------------------------------
+
+#include <cmath>
+#include <cstdio>
+#include <vector>
+#include <iostream>
+#include <algorithm>
+#include <stack>
+using namespace std;
+
+
+bool backspaceCompare(string s, string t) {
+    stack<char> stackS, stackT;
+
+    for (char c : s) {
+        if (c == '#' && !stackS.empty()) {
+            stackS.pop();
+        } else if (c != '#') {
+            stackS.push(c);
+        }
+    }
+
+    for (char c : t) {
+        if (c == '#' && !stackT.empty()) {
+            stackT.pop();
+        } else if (c != '#') {
+            stackT.push(c);
+        }
+    }
+
+    return stackS == stackT;
+}
+
+int main() {
+    string s, t;
+    
+    cin >> s >> t;
+
+    cout << (backspaceCompare(s, t) ? "true" : "false") << endl;
+
+    return 0;
+}
