@@ -1,0 +1,81 @@
+Given a string s, return the length of the longest palindromic substring in s.
+
+Input Format
+
+The First Line contains an integer N
+The Second line contains a string of size N.
+Constraints
+
+1 <= s.length <= 1000
+s consist of only digits and English letters.
+Output Format
+
+Print the single integer which is the answer to the question
+
+Sample Input 0
+4
+epbm
+
+Sample Output 0
+1
+
+Sample Input 1
+5
+eeeee
+
+Sample Output 1
+5
+
+
+
+
+--------------------------------------------------------------------
+
+
+
+
+#include <iostream>
+#include <vector>
+using namespace std;
+
+int expandAroundCenter(string s, size_t left, size_t right) {
+    while (left < s.length() && right < s.length() && s[left] == s[right]) {
+        left--;
+        right++;
+    }
+    return right - left - 1;
+}
+
+int longestPalindromeSubstring(string s) {
+    if (s.empty()) {
+        return 0;
+    }
+
+    size_t start = 0, end = 0;
+
+    for (size_t i = 0; i < s.length(); ++i) {
+        size_t len1 = expandAroundCenter(s, i, i);
+        size_t len2 = expandAroundCenter(s, i, i + 1);
+        size_t len = max(len1, len2);
+
+        if (len > end - start) {
+            start = i - (len - 1) / 2;
+            end = i + len / 2;
+        }
+    }
+
+    return end - start + 1;
+}
+
+int main() {
+    int N;
+    cin >> N;
+
+    string s;
+    cin >> s;
+
+    int result = longestPalindromeSubstring(s);
+    cout << result << endl;
+
+    return 0;
+}
