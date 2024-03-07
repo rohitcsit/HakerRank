@@ -1,0 +1,80 @@
+There are n soldiers standing in a line. Each soldier is assigned a unique rating value.
+
+You have to form a team of 3 soldiers amongst them under the following rules:
+
+Choose 3 soldiers with index (i, j, k) with rating (rating[i], rating[j], rating[k]).
+A team is valid if: (rating[i] < rating[j] < rating[k]) or (rating[i] > rating[j] > rating[k]) where (0 <= i < j < k < n).
+Return the number of teams you can form given the conditions. (soldiers can be part of multiple teams).
+
+Input Format
+
+The First line contains a integer N denoting the size of array.
+The Next line contains N integers denoting the element of the array.
+Constraints
+
+n == rating.length
+3 <= n <= 1000
+1 <= rating[i] <= 10^5
+All the integers in rating are unique.
+Output Format
+
+Print a integer which is the answer to the question.
+
+Sample Input 0
+5
+2 5 3 4 1
+
+Sample Output 0
+3
+
+Sample Input 1
+3
+2 1 3
+
+Sample Output 1
+0
+
+
+
+-------------------------------------------------------------------------
+
+
+#include <cmath>
+#include <cstdio>
+#include <vector>
+#include <iostream>
+#include <algorithm>
+using namespace std;
+
+
+int count_teams(int n, const vector<int>& ratings) {
+    int count = 0;
+
+    for (int i = 0; i < n; ++i) {
+        for (int j = i + 1; j < n; ++j) {
+            for (int k = j + 1; k < n; ++k) {
+                if ((ratings[i] < ratings[j] && ratings[j] < ratings[k]) ||
+                    (ratings[i] > ratings[j] && ratings[j] > ratings[k])) {
+                    count++;
+                }
+            }
+        }
+    }
+
+    return count;
+}
+
+int main() {
+    int n;
+    cin >> n;
+
+    vector<int> ratings(n);
+    for (int i = 0; i < n; ++i) {
+        cin >> ratings[i];
+    }
+
+    int result = count_teams(n, ratings);
+    cout << result << endl;
+
+    return 0;
+}
