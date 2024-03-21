@@ -1,0 +1,191 @@
+#include <iostream>
+#include <vector>
+#include <cstring>
+
+using namespace std;
+
+const int maxn = 1e5 + 10, maxm = 2e6 + 10;
+
+struct Point {
+    int ed[26];
+    int lnk;
+    int par;
+    int c;
+    vector<int> pos;
+
+    Point() {
+        memset(ed, -1, sizeof ed);
+        lnk = -1;
+        par = -1;
+        c = -1;
+    }
+};
+
+Point mas[maxm];
+int posit = 0;
+
+int my_new() {
+    return posit++;
+}
+
+void add(int it, const string& s, int num) {
+    if (s.empty()) {
+        mas[it].pos.push_back(num);
+        return;
+    }
+
+    int c = s[0] - 'a';
+
+    if (mas[it].ed[c] == -1) {
+        mas[it].ed[c] = my_new();
+        int nit = mas[it].ed[c];
+
+        mas[nit].par = it;
+        mas[nit].c = c;
+    }
+
+    add(mas[it].ed[c], s.substr(1), num);
+}
+
+int h[maxn];
+int l[maxn], r[maxn];
+
+vector<int> z[maxm];
+
+int getlnk(int it);
+
+int go(int it, int c) {
+    if (mas[it].ed[c] != -1) {
+        return mas[it].ed[c];
+    }
+
+    if (it == 0) {
+        mas[it].ed[c] = 0;
+    } else {
+        mas[it].ed[c] = go(getlnk(it), c);
+    }
+
+    return mas[it].ed[c];
+}
+
+int getlnk(int it) {
+    if (mas[it].lnk != -1) {
+        return mas[it].lnk;
+    }
+
+    if (it == 0 || mas[it].par == 0) {
+        mas[it].lnk = 0;
+    } else {
+        mas[it].lnk = go(getlnk(mas[it].par), mas[it].c);
+    }
+
+    return mas[it].lnk;
+}
+
+vector<int> ed[maxm];
+long long ans[maxn];
+long long tr[maxn];
+
+void change(int pos, int x) {
+    for (; pos < maxn; pos |= pos + 1) {
+        tr[pos] += x;
+    }
+}
+
+long long getsum(int pos) {
+    long long ans = 0;
+
+    for (; pos >= 0; pos = (pos & (pos + 1)) - 1) {
+        ans += tr[pos];
+    }
+
+    return ans;
+}
+
+long long gores(int l, int r) {
+    return getsum(r) - getsum(l - 1);
+}
+
+void dfs(int v) {
+    for (int i = 0; i < (int)mas[v].pos.size(); i++) {
+        int g = mas[v].pos[i];
+
+        change(g, h[g]);
+    }
+
+    for (int i = 0; i < (int)z[v].size(); i++) {
+        int num = z[v][i];
+
+        int lm = l[num];
+        int rm = r[num];
+
+        ans[num] += gores(lm, rm);
+    }
+
+    for (int i = 0; i < (int)ed[v].size(); i++) {
+        int u = ed[v][i];
+
+        dfs(u);
+    }
+
+    for (int i = 0; i < (int)mas[v].pos.size(); i++) {
+        int g = mas[v].pos[i];
+
+        change(g, -h[g]);
+    }
+}
+
+int main() {
+    int n;
+
+    cin >> n;
+
+    int tr = my_new();
+
+    for (int i = 0; i < n; i++) {
+        string s;
+        cin >> s;
+
+        add(tr, s, i);
+    }
+
+    for (int i = 0; i < n; i++) {
+        cin >> h[i];
+    }
+
+    int q;
+
+    cin >> q;
+
+    for (int i = 0; i < q; i++) {
+        cin >> l[i] >> r[i];
+        string s;
+        cin >> s;
+
+        int it = tr;
+
+        for (char c : s) {
+            it = go(it, c - 'a');
+
+            z[it].push_back(i);
+        }
+    }
+
+    long long mins = 1e18;
+    long long maxs = 0;
+
+    for (int i = 1; i < posit; i++) {
+        ed[getlnk(i)].push_back(i);
+    }
+
+    dfs(0);
+
+    for (int i = 0; i < q; i++) {
+        mins = min(mins, ans[i]);
+        maxs = max(maxs, ans[i]);
+    }
+
+    cout << mins << ' ' << maxs << endl;
+
+    return 0;
+}
