@@ -1,0 +1,56 @@
+#include <string> 
+#include <cmath>  
+#include <cstdlib>  
+#include <algorithm>  
+#include <vector>  
+#include <string.h>  
+#include <utility>  
+#include <queue>
+#include <stack>
+#include <iostream>  
+
+
+using namespace std;
+
+#define INF = 2000000000
+#define FOR(i,n) for(int i = 0;i < n;i++)
+#define CLEAR(x) memset((x),0,sizeof(x))
+#define REP(i,a,b) for(int i = (a);i<(b);++i)
+#define MP make_pair
+#define ALL(a) (a).begin(),(a).end()
+#define PB push_back
+#define PII pair<int,int>
+#define sz(a) (int)(a).size()
+
+typedef long long LL;
+
+int main(){
+    ios_base::sync_with_stdio(0);
+    int n;
+    cin >> n;
+    string s;
+    int a[30];
+    FOR(i,n){
+        cin >> s;
+        if (s.length()%2 == 1){
+            cout << -1 << endl;
+            continue;
+        }
+        
+        CLEAR(a);
+        FOR(j,s.length()/2){
+            a[s[j]-'a']++;
+        }
+        int cnt = 0;
+        FOR(j,s.length()/2){
+            if (a[s[s.length()-j-1]-'a'] > 0 ){
+                a[s[s.length()-j-1]-'a']--;
+            }else
+            cnt++;
+        }
+        cout << cnt << endl;
+    }
+
+    return 0;
+}
+
