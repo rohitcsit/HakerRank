@@ -1,0 +1,53 @@
+#include <bits/stdc++.h>
+#define F first
+#define S second
+#define X real()
+#define Y imag()
+using namespace std;
+typedef long long ll;
+typedef long double ld;
+
+int main(){
+	ios_base::sync_with_stdio(0);
+	cin.tie(0);
+	int n;
+	string s;
+	cin>>n>>s;
+	int a=0;
+	int c=0;
+	int t=0;
+	int g=0;
+	for (int i=0;i<n;i++){
+		if (s[i]=='A') a++;
+		if (s[i]=='C') c++;
+		if (s[i]=='T') t++;
+		if (s[i]=='G') g++;
+	}
+	a-=n/4;
+	c-=n/4;
+	t-=n/4;
+	g-=n/4;
+	int i2=0;
+	int ca=0;
+	int cc=0;
+	int ct=0;
+	int cg=0;
+	int v=n;
+	for (int i=0;i<n;i++){
+		while (i2<n&&(ca<a||cc<c||ct<t||cg<g)){
+			if (s[i2]=='A') ca++;
+			if (s[i2]=='C') cc++;
+			if (s[i2]=='T') ct++;
+			if (s[i2]=='G') cg++;
+			i2++;
+		}
+		if (!(ca<a||cc<c||ct<t||cg<g)){
+			v=min(v, i2-i);
+		}
+		if (s[i]=='A') ca--;
+		if (s[i]=='C') cc--;
+		if (s[i]=='T') ct--;
+		if (s[i]=='G') cg--;
+	}
+	cout<<v<<endl;
+}
