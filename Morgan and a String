@@ -1,0 +1,124 @@
+#include <bits/stdc++.h>
+
+using namespace std;
+
+#define ALL(x) (x).begin(), (x).end()
+#define SZ(x) ((int)(x).size())
+#define BIT(n) ((1LL) << (long long)(n))
+#define FOR(i,c) for (auto i=(c).begin(); i != (c).end(); ++i)
+#define REP(i,n) for (int i = 0; i < (int)(n); ++i)
+#define REP1(i,a,b) for (int i=(int)(a); i <= (int)(b); ++i)
+#define MP make_pair
+#define PB push_back
+
+#define Fst first
+#define Snd second
+
+#ifdef WIN32
+#define LLD "%I64d"
+#else
+#define LLD "%lld"
+#endif
+
+typedef long long ll;
+typedef unsigned int uint;
+typedef unsigned long long ull;
+typedef long double ld;
+
+typedef pair<int, int> PII;
+typedef vector<int> VI;
+
+#define runtime() ((double)clock() / CLOCKS_PER_SEC)
+
+const double eps = 1e-7;
+// }}}
+
+#define MAX 100005
+
+#define BASE 27
+#define MOD 1000000007
+
+char sa[MAX];
+char sb[MAX];
+ll ta[MAX];
+ll tb[MAX];
+
+ll pw[MAX];
+int n, m;
+
+ll getHash(int l, int r, ll table[])
+{
+    ll tr = l > 0 ? table[l-1] : 1; 
+    return (table[r] - pw[r - l + 1] * tr % MOD + MOD) % MOD;
+}
+
+bool isSame(int a, int b, int l, int r)
+{
+    return getHash(a, b, ta) == getHash(l, r, tb);
+}
+
+bool check(int i, int j)
+{
+    int l = 0, r = min(n - i - 1, m - j - 1);
+
+    int ans = r + 1; 
+    while (l <= r)
+    {
+        int mid = (l + r) / 2;
+
+        if (isSame(i, i+mid, j, j+mid))
+            l = mid + 1;
+        else
+            r = mid - 1, ans = mid;
+    }
+    if (not sa[i + ans]) return false;
+    if (not sb[j + ans]) return true;
+    return sa[i + ans] <= sb[j + ans];
+}
+
+int main()
+{
+    int T;
+    scanf("%d", &T);
+
+    pw[0] = 1;
+    for (int i = 1; i < MAX; ++i)
+        pw[i] = pw[i-1] * BASE % MOD;
+
+    while (T--)
+    {
+        scanf("%s %s", sa, sb);
+        n = strlen(sa);
+        m = strlen(sb);
+
+        ll hash;
+        hash = 1;
+        for (int i = 0; sa[i]; ++i)
+        {
+            hash = (hash * BASE + sa[i] - 'A') % MOD;
+            ta[i] = hash;
+        }
+        hash = 1;
+        for (int i = 0; sb[i]; ++i)
+        {
+            hash = (hash * BASE + sb[i] - 'A') % MOD;
+            tb[i] = hash;
+        }
+
+        string ans;
+        int i = 0, j = 0;
+        while (sa[i] and sb[j])
+        {
+            if (check(i, j)) // i <= j
+                ans.push_back(sa[i++]);
+            else
+                ans.push_back(sb[j++]);
+        }
+        while (sa[i])
+            ans.push_back(sa[i++]);
+        while (sb[j])
+            ans.push_back(sb[j++]);
+
+        printf("%s\n", ans.c_str());
+    }
+}
