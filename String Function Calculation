@@ -1,0 +1,69 @@
+#include <iostream>
+#include <cstdio>
+#include <cstdlib>
+#include <algorithm>
+#include <vector>
+#include <string>
+#include <set>
+#include <map>
+#include <cmath>
+#include <memory.h>
+using namespace std;
+typedef long long ll;
+
+const int N = 3e5+6;
+
+#define link ololink
+int link[N], len[N], to[N][26], cnt[N],  d;
+vector<int> v[N];
+char s[N];
+
+int main(){
+    //freopen("input.txt","r",stdin);// freopen("output.txt","w",stdout);
+    
+    int n, m;
+    
+    gets(s);
+    
+    n = strlen(s);
+    
+    d = 0;
+    int l = d++;
+    
+    link[l] = -1;
+    for(int i=0;i<n;++i){
+    	int c = s[i]-'a';
+    	int x = d++;
+    	len[x] = len[l]+1;
+    	cnt[x] = 1;
+    	for(;l!=-1 && !to[l][c]; l=link[l]) to[l][c]=x;
+    	if(~l){
+    		int p = to[l][c];
+    		if(len[p]==len[l]+1) link[x] = p; else{
+    			int q = d++;
+    			memcpy(to[q], to[p], sizeof(to[p]));
+    			link[q] = link[p];
+    			len[q] = len[l]+1;
+    			for(;l!=-1 && to[l][c]==p; l=link[l]) to[l][c] = q;
+    			link[x] = link[p] = q;
+    		}
+    	}
+    	l = x;
+    }
+    
+    ll ans = 0;
+    for(int i=0;i<d;++i) v[len[i]].push_back(i);
+    
+    for(l=n;l;--l)
+    for(int k=0;k<v[l].size();++k){
+    	int i = v[l][k];
+    	int j = link[i];
+    	ans = max(ans, 1LL*len[i]*cnt[i]);
+    	cnt[j]+=cnt[i];
+    }
+    
+    cout<<ans<<endl;
+    
+    return 0;
+}
+
