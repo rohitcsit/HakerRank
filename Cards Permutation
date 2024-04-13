@@ -1,0 +1,95 @@
+#include<bits/stdc++.h>
+using namespace std;
+
+typedef long long ll;
+
+const ll mod = 1000*1000*1000+7;
+
+vector<ll> fact;
+int N, K;
+vector<int> P;
+
+struct BIT {
+vector<int> tree;
+void init() {
+tree = vector<int>(4*N, 0);
+}
+void upd(int idx, int val, int l, 
+int r, int n) {
+if(idx < l || r < idx) return;
+if(l == r) {
+tree[n] = val;
+return;
+}
+int m = (l + r)>>1;
+upd(idx, val, l, m, 2*n);
+upd(idx, val, m + 1, r, 2*n + 1);
+tree[n] = tree[2*n] + tree[2*n + 1];
+}
+int quer(int a, int b, int l, int r, int n) {
+if(b < l || r < a) return 0;
+if(a <= l && r <= b) return tree[n];
+int m = (l + r)>>1;
+int L = quer(a, b, l, m, 2*n);
+int R = quer(a, b, m + 1, r, 2*n + 1);
+return L + R;
+}
+} bit, sub;
+
+int main() {
+fact.resize(500010);
+fact[0] = 1;
+for(int i = 1; i < 500010; i++) {
+fact[i] = fact[i - 1] * i % mod;
+}
+
+scanf("%d", &N);
+K = 0;
+P.resize(N);
+sub.init();
+for(int i = 0; i < N; i++) {
+scanf("%d", &P[i]);
+P[i]--;
+if(P[i] == -1) K++;
+sub.upd(i, 1, 0, N - 1, 1);
+}
+
+ll sum = 1LL * N * (N - 1) / 2;
+for(int i = 0; i < N; i++) {
+if(P[i] != -1) sum -= P[i], sub.upd(P[i], 0, 0, N - 1, 1);
+}
+sum = (sum % mod + mod) % mod;
+
+bit.init();
+ll ans = 0;
+ll tmp = 0;
+int cnt = 0;
+for(int i = 0; i < N; i++) {
+if(P[i] == -1) {
+ll a = sum * fact[K - 1] % mod;
+ll b = tmp * fact[K - 1] % mod;
+ll c = K < 2? 0 : (1LL * K * (K - 1) / 2 % mod) 
+* fact[K - 2] % mod * cnt % mod;
+
+ans += (a - b - c) * fact[N - i - 1] % mod,
+ ans = (ans % mod + mod) % mod;
+
+
+cnt++;
+}
+else {
+bit.upd(P[i], 1, 0, N - 1, 1);
+tmp += sub.quer(P[i] + 1, N - 1, 0, N - 1, 1);
+tmp %= mod;
+
+ll a = fact[K] * P[i] % mod;
+ll b = fact[K] * bit.quer(0, P[i] - 1, 0, N - 1, 1) % mod;
+ll c = K == 0? 0 : fact[K - 1] * sub.quer(
+    0, P[i] - 1, 0, N - 1, 1) % mod * cnt % mod;
+
+ans += (a - b - c) * fact[N - 1 - i] % mod, 
+ans = (ans % mod + mod) % mod;
+}
+}
+cout << (ans + fact[K]) % mod;
+}
