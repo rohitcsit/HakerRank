@@ -1,0 +1,253 @@
+#include <fstream>
+#include <iostream>
+#include <string>
+#include <complex>
+#include <math.h>
+#include <set>
+#include <vector>
+#include <map>
+#include <queue>
+#include <stdio.h>
+#include <stack>
+#include <algorithm>
+#include <list>
+#include <ctime>
+#include <memory.h>
+#include <assert.h>
+
+#define y0 sdkfaslhagaklsldk
+#define y1 aasdfasdfasdf
+#define yn askfhwqriuperikldjk
+#define j1 assdgsdgasghsf
+#define tm sdfjahlfasfh
+#define lr asgasgash
+#define norm asdfasdgasdgsd
+
+#define eps 1e-9
+#define M_PI 3.141592653589793
+#define bs 1000000007
+#define bsize 350
+
+using namespace std;
+
+const int INF = 1e9;
+const int N = 150031;
+
+int n, tests;
+string st;
+int used[N];
+int mapp[N];
+vector<int> v;
+int whr[N];
+
+int pw[N];
+
+int S[200000][15];
+
+int maps1[200], maps2[200];
+
+vector<int> entries[100];
+int maps[4][100];
+
+int FE[N][15];
+
+void run_mapper(int a,int b)
+{
+vector<pair<int, int> > O;
+
+for (int i = 0; i < 10; i++)
+{
+int whr = FE[a][i];
+O.push_back(make_pair(whr, i));
+}
+sort(O.begin(), O.end());
+for (int i = 0; i < O.size(); i++)
+{
+maps[b][O[i].second] = i;
+}
+}
+
+int get_hash(int a, int span, int tp)
+{
+int res = 0;
+for (int i = 0; i < 10; i++)
+{
+int here = S[a+span][i] - S[a][i];
+here *= (maps[tp][i]+1);
+here *= pw[N - a - 1];
+res += here;
+}
+return res;
+}
+
+int lcp(int a, int b)
+{
+run_mapper(a, 1);
+run_mapper(b, 2);
+/*for (int i = 0; i < 10; i++)
+{
+cout << maps[1][i] << " ";
+}
+cout << endl;
+for (int i = 0; i < 10; i++)
+{
+cout << maps[2][i] << " ";
+}
+cout << endl;
+*/
+int l, r;
+l = 0;
+r = st.size() - max(a, b);
+while (l < r)
+{
+int mid = l + r + 1;
+mid /= 2;
+long long H1 = get_hash(a, mid,1);
+long long H2 = get_hash(b, mid,2);
+if (H1 == H2)
+l = mid;
+else
+r = mid - 1;
+}
+return l;
+}
+
+bool cmp(int a, int b)
+{
+int Q = lcp(a, b);
+if (a + Q == st.size())
+return true;
+if (b + Q == st.size())
+return false;
+int val1 = maps[1][st[a + Q]-'a'];
+int val2 = maps[2][st[b + Q]-'a'];
+//    cout << val1 << "%%" << val2 << endl;
+return val1 < val2;
+}
+
+int LL[N];
+int sparse[N][20];
+
+int Lcp(int a, int b)
+{
+if (a>b)
+swap(a, b);
+if (a == b)
+return 1e9;
+--b;
+int q = 0;
+while ((1 << q) * 2 < (b - a + 1))
+++q;
+return min(sparse[a][q], sparse[b - (1 << q) + 1][q]);
+}
+
+int main(){
+
+ios_base::sync_with_stdio(0);
+//cin.tie(0);
+
+cin >> n >> tests;
+
+pw[0] = 1;
+
+for (int i = 1; i < N; i++)
+{
+pw[i] = pw[i - 1] * 173;
+}
+
+cin >> st;
+
+for (int i = 0; i < 10; i++)
+{
+FE[st.size()][i] = st.size();
+}
+for (int i = st.size() - 1; i >= 0; --i)
+{
+for (int j = 0; j < 10; j++)
+{
+FE[i][j] = FE[i + 1][j];
+if (st[i] == j + 'a')
+FE[i][j] = i;
+}
+}
+
+for (int i = 0; i < st.size(); i++)
+{
+for (int j = 0; j < 10; j++)
+{
+S[i + 1][j] = S[i][j];
+if (st[i] == j + 'a')
+S[i + 1][j] += pw[i];
+}
+}
+
+for (int i = 0; i < st.size(); i++)
+{
+v.push_back(i);
+}
+
+sort(v.begin(), v.end(),cmp);
+
+for (int i = 0; i < v.size(); i++)
+{
+whr[v[i]] = i;
+}
+
+for (int i = 0; i+1 < v.size(); i++)
+{
+LL[i] = lcp(v[i], v[i + 1]);
+}
+
+for (int lev = 0; lev < 17; lev++)
+{
+for (int i = 0; i < v.size(); i++)
+{
+if (lev == 0)
+sparse[i][lev] = LL[i];
+else
+{
+sparse[i][lev] = sparse[i][lev - 1];
+if (i + (1 << lev) / 2 <= st.size())
+sparse[i][lev] = min(sparse[i][lev],
+ sparse[i + (1 << lev) / 2][lev - 1]);
+}
+}
+}
+
+for (int i = 1; i <= tests; i++)
+{
+int l, r;
+cin >> l >> r;
+--l;
+--r;
+int span = r - l + 1;
+int ps = whr[l];
+l = ps;
+r = v.size() - 1;
+while (l < r)
+{
+int mid = l + r+1;
+mid /= 2;
+if (Lcp(ps,mid) >= span)
+l = mid;
+else
+r = mid - 1;
+}
+int R = r;
+r = ps;
+l = 0;
+while (l < r)
+{
+int mid = l + r;
+mid /= 2;
+if (Lcp(ps,mid) >= span)
+r = mid;
+else
+l = mid + 1;
+}
+cout << R-l+1 << endl;
+}
+
+cin.get(); cin.get();
+return 0;
+}
