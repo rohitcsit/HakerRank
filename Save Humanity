@@ -1,0 +1,48 @@
+#include <bits/stdc++.h>
+using namespace std;
+typedef long long ll;
+
+vector<int> Z(string s) {
+  vector<int> z = {0};
+  int l = 0, r = 0;
+  for (int i = 1; i < s.size(); i++) {
+    if (i >= r) {
+      r = l = i;
+      while (r < s.size() && s[r-i] == s[r]) r++;
+      z.push_back(r-i);
+    } else {
+      if (z[i-l] < r-i) {
+    z.push_back(z[i-l]);
+      } else {
+    l = i;
+    while (r < s.size() && s[r-i] == s[r]) r++;
+    z.push_back(r-i);
+      }
+    }
+  }
+  return z;
+}
+
+int main() {
+  ios::sync_with_stdio(0); cin.tie(0);
+  int t;
+  cin >> t;
+  while (t--) {
+    string text, pat;
+    cin >> text >> pat;
+    auto a = Z(pat+"@"+text);
+    reverse(text.begin(),text.end());
+    reverse(pat.begin(),pat.end());
+    auto b = Z(pat+"@"+text);
+    vector<int> ans;
+    for (int i = 0; i+pat.size() <= text.size(); i++) {
+      if (a[pat.size()+1+i]+b[pat.size()+1+text.size()-(i+pat.size())]+1 >= pat.size())
+    ans.push_back(i);
+    }
+    if (ans.empty()) cout << "No Match!" << endl;
+    else {
+      for (int i : ans) cout << i << ' ';
+      cout << endl;
+    }
+  }
+}
