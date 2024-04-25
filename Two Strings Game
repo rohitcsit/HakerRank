@@ -1,0 +1,162 @@
+#include <bits/stdc++.h>
+
+using namespace std;
+
+const int maxn = 6e5;
+
+string ans;
+int mex_ans;
+
+struct suffix_automaton
+{
+    int len[maxn], link[maxn];
+    map<char, int> to[maxn];
+    int sz = 1, last;
+    void add_letter(char c)
+    {
+        int p = last;
+        last = sz++;
+        len[last] = len[p] + 1;
+        for(; !to[p][c]; p = link[p]) to[p][c] = last;
+        if(to[p][c] == last)
+            return;
+        int q = to[p][c];
+        if(len[q] == len[p] + 1)
+        {
+            link[last] = q;
+            return;
+        }
+        int cl = sz++;
+        to[cl] = to[q];
+        link[cl] = link[q];
+        len[cl] = len[p] + 1;
+        link[last] = link[q] = cl;
+        for(; to[p][c] == q; p = link[p]) to[p][c] = cl;
+    }
+
+    vector<int> top_sort[maxn];
+    int mex[maxn];
+    int mex_d[maxn];
+    int64_t total[maxn];
+    int64_t sum;
+
+    void dfs()
+    {
+        for(auto it: top_sort)
+        for(auto v: it)
+        {
+            vector<int> g;
+            for(auto it: to[v])
+                g.push_back(mex[it.second]);
+            for(auto it: g)
+                mex_d[it] = v + 1;
+            for(int i = 0; ; i++)
+                if(mex_d[i] != v + 1)
+                {
+                    mex[v] = i;
+                    break;
+                }
+            if(v == 0)
+            {
+                total[mex[v]]++;
+                sum++;
+            }
+            total[mex[v]] += len[v] - len[link[v]];
+            sum += len[v] - len[link[v]];
+        }
+    }
+
+    void build(string s)
+    {
+        for(auto c: s)
+            add_letter(c);
+        for(int i = 0; i < sz; i++)
+            top_sort[len[i]].push_back(i);
+        reverse(top_sort, top_sort + maxn);
+        dfs();
+    }
+
+    int64_t win[maxn];
+    int64_t win_cnt[maxn];
+
+    void rec_dfs(int v, int64_t &k)
+    {
+        if(win[v] >= k)
+        {
+            mex_ans = mex[v];
+            return;
+        }
+        else
+        {
+            k -= win[v];
+        }
+        for(auto it: to[v])
+        {
+            if(win_cnt[it.second] >= k)
+            {
+                ans += it.first;
+                rec_dfs(it.second, k);
+                return;
+            }
+            else
+            {
+                k -= win_cnt[it.second];
+            }
+        }
+    }
+} sa1, sa2;
+
+const int64_t inf = 1e18 + 42;
+void win_dfs1()
+{
+    for(auto it: sa1.top_sort)
+    for(auto v: it)
+    {
+        sa1.win[v] = sa2.sum - sa2.total[sa1.mex[v]];
+        sa1.win_cnt[v] = sa1.win[v];
+        for(auto it: sa1.to[v])
+        {
+            sa1.win_cnt[v] += sa1.win_cnt[it.second];
+            sa1.win_cnt[v] = min(sa1.win_cnt[v], inf);
+        }
+    }
+}
+
+void win_dfs2()
+{
+    for(auto it: sa2.top_sort)
+    for(auto v: it)
+    {
+        sa2.win[v] = mex_ans != sa2.mex[v];
+        sa2.win_cnt[v] = sa2.win[v];
+        for(auto it: sa2.to[v])
+            sa2.win_cnt[v] += sa2.win_cnt[it.second];
+    }
+}
+
+int main()
+{
+    ios::sync_with_stdio(0);
+    cin.tie(0);
+    int n, m;
+    int64_t k;
+    cin >> n >> m >> k;
+    string a, b;
+    cin >> a >> b;
+    sa1.build(a);
+    sa2.build(b);
+    win_dfs1();
+    if(k > sa1.win_cnt[0])
+    {
+        cout << "no solution" << endl;
+        return 0;
+    }
+    sa1.rec_dfs(0, k);
+    cout << ans << endl;
+    win_dfs2();
+    ans = "";
+    sa2.rec_dfs(0, k);
+    cout << ans << endl;
+    return 0;
+}
+
