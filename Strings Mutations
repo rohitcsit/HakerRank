@@ -1,0 +1,12 @@
+def mutate_string(string, position, character):
+    
+    
+    # string[:position] = abrac
+    # string[position:] = adabra
+    # character = k
+    # newstring = string[:position] + character + string[position:] = abrackadabra
+    # need some way to get rid of the starting a for the last part of the concatenate
+
+    newstring = string[:position] + character + string[position+1:]
+
+    return newstring
