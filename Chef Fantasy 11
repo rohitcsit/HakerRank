@@ -1,0 +1,15 @@
+# cook your dish here
+# Input the number of test cases
+T = int(input())
+
+# Iterate through each test case
+for _ in range(T):
+    # Read the number of players Chef is considering
+    N = int(input())
+    
+    # Calculate the number of possible choices for captain and vice-captain
+    choices = N * (N - 1)
+    
+    # Output the result
+    print(choices)
+    
