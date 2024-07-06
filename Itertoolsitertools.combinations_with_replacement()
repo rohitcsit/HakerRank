@@ -1,0 +1,17 @@
+from itertools import combinations_with_replacement
+
+def main():
+    # Read input
+    s, r = input().split()
+    r = int(r)
+    
+    # Generate combinations
+    combinations = combinations_with_replacement(sorted(s), r)
+    
+    # Print combinations
+    for combination in combinations:
+        print(''.join(combination))
+
+# Run the main function
+if __name__ == "__main__":
+    main()
